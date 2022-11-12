@@ -63,13 +63,14 @@ def get_url_info(visits: list, url: str) -> tuple():
     ('https://blanker.org/', 'Blanker', '2020-09-16', '14:15:34.901814', 369809373),\
     ('https://post.ua.nova.poshta/', 'NovaPoshta', '2020-09-15', '17:08:29.949781', 65220926)], \
     'https://www.blank.com/')
-    ('https://www.blank.com/', '2020-08-16', '23:20:32.633446', 119414007.0)
+    ('Blank', '2020-08-16', '23:20:32.633446', 1, 119414007.0)
     """
     count = 0
     local_list = []
     for element in visits:
         if element[0] == url:
-            if element[0] in local_list:
+            if element[1] in local_list:
+                count += 1
                 date_visit_previous = datetime.strptime(local_list[1], '%Y-%m-%d').date()
                 date_visit_current = datetime.strptime(element[2], '%Y-%m-%d').date()
                 if date_visit_current > date_visit_previous:
@@ -78,18 +79,19 @@ def get_url_info(visits: list, url: str) -> tuple():
                 elif date_visit_current == date_visit_previous:
                     local_list[1] = element[2]
                     local_list[2] = max(element[3], local_list[2])
-                local_list[3] += element[4]
-                count += 1
+                local_list[3] = count
+                local_list[4] += element[4]
             else:
-                local_list.append(element[0])
+                count = 1
+                local_list.append(element[1])
                 local_list.append(element[2])
                 local_list.append(element[3])
+                local_list.append(count)
                 local_list.append(element[4])
-                count = 1
-    if len(local_list) > 2:
-        local_list[3] /= count
+    if count > 0:
+        local_list[4] /= count
         return tuple(local_list)
-    return None
+    return ("","","",0,0)
 
 def read_file(fine_name : str) -> list:
     """
@@ -103,5 +105,3 @@ def read_file(fine_name : str) -> list:
 if __name__ == "__main__":
     import doctest
     print(doctest.testmod())
-    visits = read_file("history.txt")
-    print(get_url_info([], "https://mail.google.com/mail/u/0/"))
