@@ -21,3 +21,4 @@ def get_graph_from_file(file_name):
             local_list[1] = int(local_list[1])
             graph_list.append(local_list)
         return graph_list
+        
